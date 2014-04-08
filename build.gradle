@@ -1,0 +1,32 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.elasticsearch:elasticsearch:1.1.0'
+    compile 'org.apache.lucene:lucene-core:4.7.0'
+    runtime 'log4j:log4j:1.2.17'
+}
+
+processResources {
+    from(sourceSets.main.resources.srcDirs) {
+        expand(version: version)
+    }
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'elasticsearch-query-access-control-filter', 'Implementation-Version': version
+    }
+}
+
+test {
+    testLogging {
+        events 'started', 'passed'
+    }
+}
