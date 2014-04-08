@@ -1,4 +1,4 @@
-package org.elasticsearch.plugin.query.accesscontrol;
+package org.apache.lucene.search;
 
 
 import org.apache.lucene.index.AtomicReaderContext;

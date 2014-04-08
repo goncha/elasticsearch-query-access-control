@@ -1,4 +1,4 @@
-package org.elasticsearch.plugin.query.accesscontrol;
+package org.apache.lucene.search;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.util.BytesRef;
@@ -38,7 +38,7 @@ public class AccessControlFilter extends TermBytesFilter {
     }
 
 
-    public static String toString(Map<String,Long> perm) {
+    public static String toString(Map<String,String> perm) {
         StringBuilder sb = new StringBuilder();
 
         List<String> keys = new ArrayList<String>(perm.keySet());
@@ -47,7 +47,7 @@ public class AccessControlFilter extends TermBytesFilter {
         int i = 0;
         for(String key : keys) {
             if (i++ > 0) sb.append(",");
-            Long value = perm.get(key);
+            String value = perm.get(key);
             if (value == null) throw new IllegalArgumentException(key + "'s value is null in permission");
             sb.append(key).append("=").append(value);
         }
