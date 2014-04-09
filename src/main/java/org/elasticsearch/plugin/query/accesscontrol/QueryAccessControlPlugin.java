@@ -9,7 +9,7 @@ public class QueryAccessControlPlugin extends AbstractPlugin {
 
     @Override
     public String name() {
-        return "query-accesscontrol";
+        return "query-access-control";
     }
 
     @Override
@@ -20,4 +20,5 @@ public class QueryAccessControlPlugin extends AbstractPlugin {
     public void onModule(IndicesQueriesModule module) {
         module.addFilter(new AccessControlFilterParser());
     }
+
 }
