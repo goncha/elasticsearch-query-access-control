@@ -14,6 +14,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -64,15 +65,17 @@ public class LuceneAccessControlFilterTest extends BaseAccessControlFilterTest {
         indexWriter.close();
     }
 
-
-    @Test
-    public void searchWithoutAccessControl() throws Exception {
+    @Before
+    public void setUpLucene() throws IOException {
         setUpLuceneIndexer();
         index(1);
         tearDownLuceneIndexer();
 
         setUpLuceneSearcher();
+    }
 
+    @Test
+    public void searchWithoutAccessControl() throws Exception {
         Query query = queryParser.parse("request");
         ScoreDoc[] hits = indexSearcher.search(query, null, Integer.MAX_VALUE).scoreDocs;
         Assert.assertEquals(416, hits.length);
@@ -81,12 +84,6 @@ public class LuceneAccessControlFilterTest extends BaseAccessControlFilterTest {
 
     @Test
     public void searchWithAccessControlThenReturnsOneHit() throws Exception {
-        setUpLuceneIndexer();
-        index(1);
-        tearDownLuceneIndexer();
-
-        setUpLuceneSearcher();
-
         Grants grants = new Grants();
         grants
                 .in("A").add("0")
@@ -102,13 +99,6 @@ public class LuceneAccessControlFilterTest extends BaseAccessControlFilterTest {
 
     @Test
     public void searchWithAccessControlThenReturnsTwoHits() throws Exception {
-        setUpLuceneIndexer();
-        index(1);
-        tearDownLuceneIndexer();
-
-
-        setUpLuceneSearcher();
-
         Grants grants = new Grants();
         grants
                 .in("A").add("5")
@@ -124,13 +114,6 @@ public class LuceneAccessControlFilterTest extends BaseAccessControlFilterTest {
 
     @Test
     public void searchWithAccessControlThenReturnsThreeHitsByMultiDimensionIds() throws Exception {
-        setUpLuceneIndexer();
-        index(1);
-        tearDownLuceneIndexer();
-
-
-        setUpLuceneSearcher();
-
         Grants grants = new Grants();
         grants
                 .in("A").add("0").add("1")
@@ -146,13 +129,6 @@ public class LuceneAccessControlFilterTest extends BaseAccessControlFilterTest {
 
     @Test
     public void searchWithAccessControlThenReturnsZeroHit() throws Exception {
-        setUpLuceneIndexer();
-        index(1);
-        tearDownLuceneIndexer();
-
-
-        setUpLuceneSearcher();
-
         Grants grants = new Grants();
         grants
                 .in("A").add("0")
@@ -168,13 +144,6 @@ public class LuceneAccessControlFilterTest extends BaseAccessControlFilterTest {
 
     @Test
     public void searchWithAccessControlThenReturnsZeroHitByMultiDimensionIds() throws Exception {
-        setUpLuceneIndexer();
-        index(1);
-        tearDownLuceneIndexer();
-
-
-        setUpLuceneSearcher();
-
         Grants grants = new Grants();
         grants
                 .in("A").add("0").add("1").add("2")
