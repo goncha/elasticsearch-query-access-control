@@ -1,5 +1,6 @@
 package org.elasticsearch.index.query;
 
+import org.apache.lucene.search.AccessControlFilter;
 import org.apache.lucene.search.Filter;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.xcontent.XContentParser;
@@ -64,7 +65,7 @@ public class AccessControlFilterParser implements FilterParser {
             throw new QueryParsingException(parseContext.index(), "No field specified for access-control filter");
         }
 
-        return null;
+        return new AccessControlFilter(fieldName, grants);
     }
 
     protected void parseGrants(QueryParseContext parseContext, Map<String,Set<String>> grants)
