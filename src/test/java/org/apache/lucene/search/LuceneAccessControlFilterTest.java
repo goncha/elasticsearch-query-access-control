@@ -143,4 +143,48 @@ public class LuceneAccessControlFilterTest extends BaseAccessControlFilterTest {
         ScoreDoc[] hits = indexSearcher.search(query, filter, Integer.MAX_VALUE).scoreDocs;
         Assert.assertEquals(3, hits.length);
     }
+
+    @Test
+    public void searchWithAccessControlThenReturnsZeroHit() throws Exception {
+        setUpLuceneIndexer();
+        index(1);
+        tearDownLuceneIndexer();
+
+
+        setUpLuceneSearcher();
+
+        Grants grants = new Grants();
+        grants
+                .in("A").add("0")
+                .in("B").add("0")
+                .in("C").add("0")
+                .in("D").add("0");
+        Filter filter = new AccessControlFilter("perm", grants.getMap());
+
+        Query query = queryParser.parse("request");
+        ScoreDoc[] hits = indexSearcher.search(query, filter, Integer.MAX_VALUE).scoreDocs;
+        Assert.assertEquals(0, hits.length);
+    }
+
+    @Test
+    public void searchWithAccessControlThenReturnsZeroHitByMultiDimensionIds() throws Exception {
+        setUpLuceneIndexer();
+        index(1);
+        tearDownLuceneIndexer();
+
+
+        setUpLuceneSearcher();
+
+        Grants grants = new Grants();
+        grants
+                .in("A").add("0").add("1").add("2")
+                .in("B").add("0").add("1").add("2")
+                .in("C").add("0").add("1").add("2")
+                .in("D").add("0").add("1").add("2");
+        Filter filter = new AccessControlFilter("perm", grants.getMap());
+
+        Query query = queryParser.parse("request");
+        ScoreDoc[] hits = indexSearcher.search(query, filter, Integer.MAX_VALUE).scoreDocs;
+        Assert.assertEquals(0, hits.length);
+    }
 }
