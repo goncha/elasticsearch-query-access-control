@@ -7,6 +7,8 @@ import java.util.Map;
 
 public abstract class BaseAccessControlFilterTest {
 
+    static final String QUERY_KEYWORD = "request";
+
     /**
      * Convert to permission to key-value map
      */
@@ -40,7 +42,7 @@ public abstract class BaseAccessControlFilterTest {
 
         long endMillis = System.currentTimeMillis();
         if (profiling()) {
-            System.out.printf("Indexed %d docs in %d ms", count, (endMillis-beginMillis));
+            System.out.printf("Indexed %d docs in %d ms%n", count, (endMillis-beginMillis));
         }
     }
 

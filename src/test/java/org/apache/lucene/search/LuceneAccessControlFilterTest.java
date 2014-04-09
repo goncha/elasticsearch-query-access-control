@@ -1,69 +1,13 @@
 package org.apache.lucene.search;
 
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StringField;
-import org.apache.lucene.document.TextField;
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.util.Version;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
 
-public class LuceneAccessControlFilterTest extends BaseAccessControlFilterTest {
+public class LuceneAccessControlFilterTest extends BaseLuceneAccessControlFilterTest {
 
-    Directory indexDirectory;
-
-    Analyzer analyzer;
-
-    IndexWriter indexWriter;
-
-    DirectoryReader directoryReader;
-
-    IndexSearcher indexSearcher;
-
-    QueryParser queryParser;
-
-    @Override
-    protected void indexDoc(String id, String content, String perm) throws IOException {
-        Document doc = new Document();
-
-        doc.add(new StringField("id", id, Field.Store.YES));
-        doc.add(new TextField("content", content, Field.Store.NO));
-        doc.add(new StringField("perm", perm, Field.Store.NO));
-
-        indexWriter.addDocument(doc);
-    }
-
-    void setUpLuceneIndexer() throws IOException {
-        indexDirectory = new RAMDirectory();
-
-        analyzer = new StandardAnalyzer(Version.LUCENE_47);
-
-        IndexWriterConfig indexWriterConfig = new IndexWriterConfig(Version.LUCENE_47, analyzer);
-        indexWriterConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
-        indexWriter = new IndexWriter(indexDirectory, indexWriterConfig);
-
-    }
-
-    protected void setUpLuceneSearcher() throws IOException {
-        directoryReader = DirectoryReader.open(indexDirectory);
-        indexSearcher = new IndexSearcher(directoryReader);
-        queryParser = new QueryParser(Version.LUCENE_47, "content", analyzer);
-    }
-
-    protected void tearDownLuceneIndexer() throws IOException {
-        indexWriter.close();
-    }
 
     @Before
     public void setUpLucene() throws IOException {
@@ -76,7 +20,7 @@ public class LuceneAccessControlFilterTest extends BaseAccessControlFilterTest {
 
     @Test
     public void searchWithoutAccessControl() throws Exception {
-        Query query = queryParser.parse("request");
+        Query query = queryParser.parse(QUERY_KEYWORD);
         ScoreDoc[] hits = indexSearcher.search(query, null, Integer.MAX_VALUE).scoreDocs;
         Assert.assertEquals(416, hits.length);
     }
@@ -92,7 +36,7 @@ public class LuceneAccessControlFilterTest extends BaseAccessControlFilterTest {
                 .in("D").add("400");
         Filter filter = new AccessControlFilter("perm", grants.getMap());
 
-        Query query = queryParser.parse("request");
+        Query query = queryParser.parse(QUERY_KEYWORD);
         ScoreDoc[] hits = indexSearcher.search(query, filter, Integer.MAX_VALUE).scoreDocs;
         Assert.assertEquals(1, hits.length);
     }
@@ -107,7 +51,7 @@ public class LuceneAccessControlFilterTest extends BaseAccessControlFilterTest {
                 .in("D").add("5");
         Filter filter = new AccessControlFilter("perm", grants.getMap());
 
-        Query query = queryParser.parse("request");
+        Query query = queryParser.parse(QUERY_KEYWORD);
         ScoreDoc[] hits = indexSearcher.search(query, filter, Integer.MAX_VALUE).scoreDocs;
         Assert.assertEquals(2, hits.length);
     }
@@ -122,7 +66,7 @@ public class LuceneAccessControlFilterTest extends BaseAccessControlFilterTest {
                 .in("D").add("400").add("800").add("601");
         Filter filter = new AccessControlFilter("perm", grants.getMap());
 
-        Query query = queryParser.parse("request");
+        Query query = queryParser.parse(QUERY_KEYWORD);
         ScoreDoc[] hits = indexSearcher.search(query, filter, Integer.MAX_VALUE).scoreDocs;
         Assert.assertEquals(3, hits.length);
     }
@@ -137,7 +81,7 @@ public class LuceneAccessControlFilterTest extends BaseAccessControlFilterTest {
                 .in("D").add("0");
         Filter filter = new AccessControlFilter("perm", grants.getMap());
 
-        Query query = queryParser.parse("request");
+        Query query = queryParser.parse(QUERY_KEYWORD);
         ScoreDoc[] hits = indexSearcher.search(query, filter, Integer.MAX_VALUE).scoreDocs;
         Assert.assertEquals(0, hits.length);
     }
@@ -152,7 +96,7 @@ public class LuceneAccessControlFilterTest extends BaseAccessControlFilterTest {
                 .in("D").add("0").add("1").add("2");
         Filter filter = new AccessControlFilter("perm", grants.getMap());
 
-        Query query = queryParser.parse("request");
+        Query query = queryParser.parse(QUERY_KEYWORD);
         ScoreDoc[] hits = indexSearcher.search(query, filter, Integer.MAX_VALUE).scoreDocs;
         Assert.assertEquals(0, hits.length);
     }
