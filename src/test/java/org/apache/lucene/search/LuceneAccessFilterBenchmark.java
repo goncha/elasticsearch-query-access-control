@@ -8,7 +8,7 @@ import org.apache.lucene.store.FSDirectory;
 import java.io.File;
 import java.io.IOException;
 
-public class LuceneAccessFilterProfiler extends BaseLuceneAccessControlFilterTest {
+public class LuceneAccessFilterBenchmark extends BaseLuceneAccessControlFilterTest {
 
     @Override
     protected boolean profiling() {
@@ -20,7 +20,7 @@ public class LuceneAccessFilterProfiler extends BaseLuceneAccessControlFilterTes
         return FSDirectory.open(new File("data"));
     }
 
-    void profile(Grants grants) throws IOException, ParseException {
+    void benchmark(Grants grants) throws IOException, ParseException {
         long beginMillis = System.currentTimeMillis();
 
         Filter filter = null;
@@ -35,14 +35,14 @@ public class LuceneAccessFilterProfiler extends BaseLuceneAccessControlFilterTes
         System.out.printf("Found %d for keyword '%s' in %d ms%n", hits.length, QUERY_KEYWORD, endMillis-beginMillis);
     }
 
-    void profile() throws IOException, ParseException {
+    void benchmark() throws IOException, ParseException {
         setUpLuceneIndexer();
         index(1000);
         tearDownLuceneIndexer();
 
         setUpLuceneSearcher();
 
-        profile(null);
+        benchmark(null);
 
         Grants grants = new Grants();
         grants
@@ -50,11 +50,11 @@ public class LuceneAccessFilterProfiler extends BaseLuceneAccessControlFilterTes
                 .in("B").add("105")
                 .in("C").add("105")
                 .in("D").add("5");
-        profile(grants);
+        benchmark(grants);
     }
 
     public static void main(String[] args) throws Exception {
-        new LuceneAccessFilterProfiler().profile();
+        new LuceneAccessFilterBenchmark().benchmark();
     }
 
 }
