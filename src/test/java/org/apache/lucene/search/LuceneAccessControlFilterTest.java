@@ -1,6 +1,5 @@
 package org.apache.lucene.search;
 
-import org.apache.lucene.queryparser.classic.ParseException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

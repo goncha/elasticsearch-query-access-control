@@ -2,15 +2,11 @@ package org.apache.lucene.search;
 
 
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
 
 import java.io.File;
 import java.io.IOException;
 
 public class LuceneAccessControlFilterBenchmark extends BaseLuceneAccessControlFilterTest {
-
-    File indexDirectory = new File("lc-data");
 
     @Override
     protected boolean profiling() {

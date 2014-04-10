@@ -1,7 +1,6 @@
 package org.elasticsearch.index.query;
 
 import org.apache.lucene.search.Grants;
-import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.junit.*;
 
 import java.io.File;

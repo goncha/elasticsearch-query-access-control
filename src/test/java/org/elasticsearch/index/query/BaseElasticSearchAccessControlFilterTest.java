@@ -4,7 +4,6 @@ import org.apache.lucene.search.BaseAccessControlFilterTest;
 import org.apache.lucene.search.Grants;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.client.Requests;
 import org.elasticsearch.common.settings.ImmutableSettings;
@@ -12,7 +11,6 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 
-import java.io.File;
 import java.io.IOException;
 
 public abstract class BaseElasticSearchAccessControlFilterTest extends BaseAccessControlFilterTest {

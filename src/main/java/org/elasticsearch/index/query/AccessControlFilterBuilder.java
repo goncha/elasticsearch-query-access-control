@@ -1,6 +1,5 @@
 package org.elasticsearch.index.query;
 
-import org.elasticsearch.common.xcontent.ToXContent;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 
 import java.io.IOException;

@@ -80,7 +80,7 @@ public abstract class BaseAccessControlFilterTest {
             }
         }
         if(!file.delete()) {
-            System.out.printf("Failed to delete %s", file.getAbsolutePath());
+            System.err.printf("Failed to delete %s%n", file.getAbsolutePath());
         }
     }
 

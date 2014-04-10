@@ -4,7 +4,6 @@ import org.apache.lucene.search.AccessControlFilter;
 import org.apache.lucene.search.Filter;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.xcontent.XContentParser;
-import org.elasticsearch.index.cache.filter.support.CacheKeyFilter;
 
 import java.io.IOException;
 import java.util.HashMap;

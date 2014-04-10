@@ -13,7 +13,6 @@ public class ElasticSearchAccessControlFilterBenchmark extends BaseElasticSearch
         return true;
     }
 
-
     void benchmark(Grants grants) {
         deleteDirectory(new File(DATA_DIRECTORY));
 
