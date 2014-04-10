@@ -4,6 +4,7 @@ import org.apache.lucene.search.BaseAccessControlFilterTest;
 import org.apache.lucene.search.Grants;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.client.Requests;
 import org.elasticsearch.common.settings.ImmutableSettings;
@@ -23,9 +24,9 @@ public abstract class BaseElasticSearchAccessControlFilterTest extends BaseAcces
 
     static final String INDEX_NAME = "bigdata";
 
-    Node masterNode;
-    Node clientNode;
+    Node node;
 
+    Client client;
 
     BulkRequestBuilder bulkRequestBuilder;
 
@@ -37,7 +38,7 @@ public abstract class BaseElasticSearchAccessControlFilterTest extends BaseAcces
 
     @Override
     protected int indexBulk(int multiply) throws IOException {
-        bulkRequestBuilder = clientNode.client().prepareBulk();
+        bulkRequestBuilder = client.prepareBulk();
         int count = super.indexBulk(multiply);
         bulkRequestBuilder.execute().actionGet();
         return count;
@@ -49,12 +50,11 @@ public abstract class BaseElasticSearchAccessControlFilterTest extends BaseAcces
     protected void beforeIndexing() {
         super.beforeIndexing();
 
-        IndicesAdminClient adminClient = clientNode.client().admin().indices();
+        IndicesAdminClient adminClient = client.admin().indices();
 
         // disable refreshing for bulk indexing when creating index
         ImmutableSettings.Builder settingsBuilder = ImmutableSettings.builder()
-                .put("index.refresh_interval", "-1")
-                .put("index.translog.disable_flush", true);
+                .put("index.refresh_interval", "-1");
 
         if (isMemoryStore())
             settingsBuilder.put("index.store.type", "memory");
@@ -73,41 +73,34 @@ public abstract class BaseElasticSearchAccessControlFilterTest extends BaseAcces
     protected void afterIndexing() {
         super.afterIndexing();
 
-        IndicesAdminClient adminClient = clientNode.client().admin().indices();
+        IndicesAdminClient adminClient = client.admin().indices();
 
         // force a refreshing after bulk indexing
         adminClient.prepareRefresh(INDEX_NAME).execute().actionGet();
 
         // enable refreshing after bulk indexing
         Settings.Builder settingsBuilder = ImmutableSettings.builder()
-                .put("index.refresh_interval", "1s")
-                .put("index.translog.disable_flush", false);
+                .put("index.refresh_interval", "1s");
         adminClient.prepareUpdateSettings(INDEX_NAME).setSettings(settingsBuilder).execute().actionGet();
     }
 
-    void setUpMasterNode() {
+    void setUpNode() {
         NodeBuilder builder = NodeBuilder.nodeBuilder();
         builder.clusterName(CLUSTER_NAME).data(true).local(true);
         builder.settings().put("path.data", DATA_DIRECTORY);
         builder.settings().put("http.enabled", false);
-        masterNode = builder.build();
-        masterNode.start();
+        node = builder.build();
+        node.start();
+        client = node.client();
     }
 
-    void setUpClientNode() {
-        NodeBuilder builder = NodeBuilder.nodeBuilder();
-        builder.clusterName(CLUSTER_NAME).data(false).local(true).client(true);
-        clientNode = builder.build();
-        clientNode.start();
-    }
-
-    void tearDownNodes() {
-        clientNode.stop();
-        masterNode.stop();
+    void tearDownNode() {
+        client = null;
+        node.stop();
     }
 
     protected int search(Grants grants) {
-        SearchRequestBuilder reqBuilder = clientNode.client().prepareSearch(INDEX_NAME);
+        SearchRequestBuilder reqBuilder = client.prepareSearch(INDEX_NAME);
 
         reqBuilder.setQuery(QueryBuilders.termQuery("content", QUERY_KEYWORD))
                 .addFields("content")

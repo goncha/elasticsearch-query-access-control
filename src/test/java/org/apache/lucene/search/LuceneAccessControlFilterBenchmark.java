@@ -19,8 +19,6 @@ public class LuceneAccessControlFilterBenchmark extends BaseLuceneAccessControlF
     }
 
     void benchmark(Grants grants) throws IOException, ParseException {
-        deleteDirectory(new File(DATA_DIRECTORY));
-
         long beginMillis = System.currentTimeMillis();
         int count = search(grants);
         long endMillis = System.currentTimeMillis();
@@ -29,6 +27,8 @@ public class LuceneAccessControlFilterBenchmark extends BaseLuceneAccessControlF
     }
 
     void benchmark() throws IOException, ParseException {
+        deleteDirectory(new File(DATA_DIRECTORY));
+
         setUpLuceneIndexer();
         index(1000);
         tearDownLuceneIndexer();

@@ -37,7 +37,12 @@ public abstract class BaseAccessControlFilterTest {
 
         int count = 0;
         for (int m = 0; m < multiply; m++) {
-            count += indexBulk(m);
+            try {
+                count += indexBulk(m);
+            } catch (Throwable t) {
+                System.err.printf("Error at multiply: %d%n", m);
+                throw new RuntimeException(t);
+            }
         }
 
         afterIndexing();

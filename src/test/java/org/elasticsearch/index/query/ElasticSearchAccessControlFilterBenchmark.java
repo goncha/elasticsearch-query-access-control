@@ -14,8 +14,6 @@ public class ElasticSearchAccessControlFilterBenchmark extends BaseElasticSearch
     }
 
     void benchmark(Grants grants) {
-        deleteDirectory(new File(DATA_DIRECTORY));
-
         long beginMillis = System.currentTimeMillis();
         int count = search(grants);
         long endMillis = System.currentTimeMillis();
@@ -24,9 +22,9 @@ public class ElasticSearchAccessControlFilterBenchmark extends BaseElasticSearch
     }
 
     void benchmark() throws IOException {
-        setUpMasterNode();
-        setUpClientNode();
+        deleteDirectory(new File(DATA_DIRECTORY));
 
+        setUpNode();
         index(1000);
 
         benchmark(null);
@@ -38,6 +36,8 @@ public class ElasticSearchAccessControlFilterBenchmark extends BaseElasticSearch
                 .in("C").add("105")
                 .in("D").add("5");
         benchmark(grants);
+
+        tearDownNode();
     }
 
     public static void main(String[] args) throws Exception {

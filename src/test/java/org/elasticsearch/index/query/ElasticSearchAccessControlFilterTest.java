@@ -15,14 +15,13 @@ public class ElasticSearchAccessControlFilterTest extends BaseElasticSearchAcces
 
     @Before
     public void setUpElasticSearch() throws IOException {
-        setUpMasterNode();
-        setUpClientNode();
+        setUpNode();
         index(1);
     }
 
     @After
     public void tearDownElasticSearch() {
-        tearDownNodes();
+        tearDownNode();
     }
 
     @Test
