@@ -1,31 +1,43 @@
-package org.apache.lucene.search;
+package org.elasticsearch.index.query;
 
-import org.apache.lucene.queryparser.classic.ParseException;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.apache.lucene.search.Grants;
+import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.junit.*;
 
+import java.io.File;
 import java.io.IOException;
 
-public class LuceneAccessControlFilterTest extends BaseLuceneAccessControlFilterTest {
+public class ElasticSearchAccessControlFilterTest extends BaseElasticSearchAccessControlFilterTest {
 
-
-    @Before
-    public void setUpLucene() throws IOException {
-        setUpLuceneIndexer();
-        index(1);
-        tearDownLuceneIndexer();
-
-        setUpLuceneSearcher();
+    @BeforeClass
+    public static void setUp() {
+        deleteDirectory(new File(DATA_DIRECTORY));
     }
 
-    protected int search(Grants grants) throws IOException, ParseException {
-        Filter filter = null;
-        if (grants != null)
-            filter = new AccessControlFilter("perm", grants.getMap());
+    @Before
+    public void setUpElasticSearch() throws IOException {
+        setUpMasterNode();
+        setUpClientNode();
+        index(1);
+    }
 
-        Query query = queryParser.parse(QUERY_KEYWORD);
-        return indexSearcher.search(query, filter, Integer.MAX_VALUE).scoreDocs.length;
+    @After
+    public void tearDownElasticSearch() {
+        tearDownNodes();
+    }
+
+    protected int search(Grants grants) {
+        SearchRequestBuilder reqBuilder = clientNode.client().prepareSearch(INDEX_NAME);
+
+        reqBuilder.setQuery(QueryBuilders.termQuery("content", QUERY_KEYWORD))
+                .addFields("content")
+                .setSize(10000000);
+
+        if (grants != null) {
+            reqBuilder.setPostFilter(new AccessControlFilterBuilder("perm", grants.getMap()));
+        }
+
+        return reqBuilder.execute().actionGet().getHits().getHits().length;
     }
 
     @Test
@@ -88,5 +100,4 @@ public class LuceneAccessControlFilterTest extends BaseLuceneAccessControlFilter
                 .in("D").add("0").add("1").add("2");
         Assert.assertEquals(0, search(grants));
     }
-
 }

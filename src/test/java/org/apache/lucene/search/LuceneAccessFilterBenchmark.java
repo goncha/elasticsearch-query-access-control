@@ -10,6 +10,8 @@ import java.io.IOException;
 
 public class LuceneAccessFilterBenchmark extends BaseLuceneAccessControlFilterTest {
 
+    File indexDirectory = new File("lc-data");
+
     @Override
     protected boolean profiling() {
         return true;
@@ -17,10 +19,14 @@ public class LuceneAccessFilterBenchmark extends BaseLuceneAccessControlFilterTe
 
     @Override
     Directory createIndexDirectory() throws IOException {
-        return FSDirectory.open(new File("data"));
+        return FSDirectory.open(indexDirectory);
     }
 
     void benchmark(Grants grants) throws IOException, ParseException {
+        if (indexDirectory.exists()) {
+            deleteDirectory(indexDirectory);
+        }
+
         long beginMillis = System.currentTimeMillis();
 
         Filter filter = null;

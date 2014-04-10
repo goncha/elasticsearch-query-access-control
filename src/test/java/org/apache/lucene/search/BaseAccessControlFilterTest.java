@@ -7,7 +7,7 @@ import java.util.Map;
 
 public abstract class BaseAccessControlFilterTest {
 
-    static final String QUERY_KEYWORD = "request";
+    protected static final String QUERY_KEYWORD = "request";
 
     /**
      * Convert to permission to key-value map
@@ -70,5 +70,16 @@ public abstract class BaseAccessControlFilterTest {
     }
 
     protected abstract void indexDoc(String id, String content, String perm) throws IOException;
+
+    protected static void deleteDirectory(File file) {
+        if (file.isDirectory()) {
+            for (File f : file.listFiles()) {
+                deleteDirectory(f);
+            }
+        }
+        if(!file.delete()) {
+            System.out.printf("Failed to delete %s", file.getAbsolutePath());
+        }
+    }
 
 }

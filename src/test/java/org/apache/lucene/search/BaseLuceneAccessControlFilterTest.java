@@ -17,7 +17,7 @@ import org.apache.lucene.util.Version;
 
 import java.io.IOException;
 
-public class BaseLuceneAccessControlFilterTest extends BaseAccessControlFilterTest {
+public abstract class BaseLuceneAccessControlFilterTest extends BaseAccessControlFilterTest {
 
     Directory indexDirectory;
 
