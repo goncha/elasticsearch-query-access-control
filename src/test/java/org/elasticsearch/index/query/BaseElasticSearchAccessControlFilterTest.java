@@ -1,7 +1,9 @@
 package org.elasticsearch.index.query;
 
 import org.apache.lucene.search.BaseAccessControlFilterTest;
+import org.apache.lucene.search.Grants;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
+import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.client.Requests;
@@ -106,4 +108,17 @@ public abstract class BaseElasticSearchAccessControlFilterTest extends BaseAcces
         masterNode.stop();
     }
 
+    protected int search(Grants grants) {
+        SearchRequestBuilder reqBuilder = clientNode.client().prepareSearch(INDEX_NAME);
+
+        reqBuilder.setQuery(QueryBuilders.termQuery("content", QUERY_KEYWORD))
+                .addFields("content")
+                .setSize(10000000);
+
+        if (grants != null) {
+            reqBuilder.setPostFilter(new AccessControlFilterBuilder("perm", grants.getMap()));
+        }
+
+        return reqBuilder.execute().actionGet().getHits().getHits().length;
+    }
 }

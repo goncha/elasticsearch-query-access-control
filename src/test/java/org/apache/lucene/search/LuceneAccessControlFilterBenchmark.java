@@ -8,7 +8,7 @@ import org.apache.lucene.store.FSDirectory;
 import java.io.File;
 import java.io.IOException;
 
-public class LuceneAccessFilterBenchmark extends BaseLuceneAccessControlFilterTest {
+public class LuceneAccessControlFilterBenchmark extends BaseLuceneAccessControlFilterTest {
 
     File indexDirectory = new File("lc-data");
 
@@ -18,27 +18,18 @@ public class LuceneAccessFilterBenchmark extends BaseLuceneAccessControlFilterTe
     }
 
     @Override
-    Directory createIndexDirectory() throws IOException {
-        return FSDirectory.open(indexDirectory);
+    protected boolean isMemoryStore() {
+        return false;
     }
 
     void benchmark(Grants grants) throws IOException, ParseException {
-        if (indexDirectory.exists()) {
-            deleteDirectory(indexDirectory);
-        }
+        deleteDirectory(new File(DATA_DIRECTORY));
 
         long beginMillis = System.currentTimeMillis();
-
-        Filter filter = null;
-        if (grants != null) {
-            filter = new AccessControlFilter("perm", grants.getMap());
-        }
-
-        Query query = queryParser.parse(QUERY_KEYWORD);
-        ScoreDoc[] hits = indexSearcher.search(query, filter, Integer.MAX_VALUE).scoreDocs;
-
+        int count = search(grants);
         long endMillis = System.currentTimeMillis();
-        System.out.printf("Found %d for keyword '%s' in %d ms%n", hits.length, QUERY_KEYWORD, endMillis-beginMillis);
+
+        System.out.printf("Found %d for keyword '%s' in %d ms%n", count, QUERY_KEYWORD, endMillis-beginMillis);
     }
 
     void benchmark() throws IOException, ParseException {
@@ -60,7 +51,7 @@ public class LuceneAccessFilterBenchmark extends BaseLuceneAccessControlFilterTe
     }
 
     public static void main(String[] args) throws Exception {
-        new LuceneAccessFilterBenchmark().benchmark();
+        new LuceneAccessControlFilterBenchmark().benchmark();
     }
 
 }

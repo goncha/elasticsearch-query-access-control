@@ -19,15 +19,6 @@ public class LuceneAccessControlFilterTest extends BaseLuceneAccessControlFilter
         setUpLuceneSearcher();
     }
 
-    protected int search(Grants grants) throws IOException, ParseException {
-        Filter filter = null;
-        if (grants != null)
-            filter = new AccessControlFilter("perm", grants.getMap());
-
-        Query query = queryParser.parse(QUERY_KEYWORD);
-        return indexSearcher.search(query, filter, Integer.MAX_VALUE).scoreDocs.length;
-    }
-
     @Test
     public void searchWithoutAccessControl() throws Exception {
         Assert.assertEquals(416, search(null));

@@ -10,14 +10,19 @@ import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
 
+import java.io.File;
 import java.io.IOException;
 
 public abstract class BaseLuceneAccessControlFilterTest extends BaseAccessControlFilterTest {
+
+    protected static String DATA_DIRECTORY = "lc-data";
 
     Directory indexDirectory;
 
@@ -42,12 +47,12 @@ public abstract class BaseLuceneAccessControlFilterTest extends BaseAccessContro
         indexWriter.addDocument(doc);
     }
 
-    Directory createIndexDirectory() throws IOException {
-        return new RAMDirectory();
-    }
-
     void setUpLuceneIndexer() throws IOException {
-        indexDirectory = createIndexDirectory();
+        if (isMemoryStore()) {
+            indexDirectory = new RAMDirectory();
+        } else {
+            indexDirectory = FSDirectory.open(new File(DATA_DIRECTORY));
+        }
 
         analyzer = new StandardAnalyzer(Version.LUCENE_47);
 
@@ -65,6 +70,15 @@ public abstract class BaseLuceneAccessControlFilterTest extends BaseAccessContro
 
     protected void tearDownLuceneIndexer() throws IOException {
         indexWriter.close();
+    }
+
+    protected int search(Grants grants) throws IOException, ParseException {
+        Filter filter = null;
+        if (grants != null)
+            filter = new AccessControlFilter("perm", grants.getMap());
+
+        Query query = queryParser.parse(QUERY_KEYWORD);
+        return indexSearcher.search(query, filter, Integer.MAX_VALUE).scoreDocs.length;
     }
 
 }

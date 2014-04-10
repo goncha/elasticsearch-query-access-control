@@ -28,6 +28,8 @@ public abstract class BaseAccessControlFilterTest {
 
     protected boolean profiling() { return false; }
 
+    protected boolean isMemoryStore() { return true; }
+
     protected void index(int multiply) throws IOException {
         long beginMillis = System.currentTimeMillis();
 

@@ -26,20 +26,6 @@ public class ElasticSearchAccessControlFilterTest extends BaseElasticSearchAcces
         tearDownNodes();
     }
 
-    protected int search(Grants grants) {
-        SearchRequestBuilder reqBuilder = clientNode.client().prepareSearch(INDEX_NAME);
-
-        reqBuilder.setQuery(QueryBuilders.termQuery("content", QUERY_KEYWORD))
-                .addFields("content")
-                .setSize(10000000);
-
-        if (grants != null) {
-            reqBuilder.setPostFilter(new AccessControlFilterBuilder("perm", grants.getMap()));
-        }
-
-        return reqBuilder.execute().actionGet().getHits().getHits().length;
-    }
-
     @Test
     public void searchWithoutAccessControl() throws Exception {
         Assert.assertEquals(416, search(null));
