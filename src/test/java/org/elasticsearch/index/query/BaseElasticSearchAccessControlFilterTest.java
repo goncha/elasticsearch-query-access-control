@@ -109,7 +109,6 @@ public abstract class BaseElasticSearchAccessControlFilterTest extends BaseAcces
         SearchRequestBuilder reqBuilder = client.prepareSearch(INDEX_NAME);
 
         reqBuilder.setQuery(QueryBuilders.termQuery("content", QUERY_KEYWORD))
-                .addFields("content")
                 .setSize(MAX_SIZE);
 
         if (grants != null) {

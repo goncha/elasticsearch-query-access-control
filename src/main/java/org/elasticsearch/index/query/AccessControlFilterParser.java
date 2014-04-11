@@ -11,6 +11,20 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * JSON example of this filter:
+ *
+ * <pre>
+ * "access-control": {
+ *     "field": "FIELD_NAME",
+ *     "grants": {
+ *         "DIMENSION_A": [ ID1, ID2, ID3, ... ],
+ *         "DIMENSION_B": [ ID1, ...],
+ *         ...
+ *     }
+ * }
+ * </pre>
+ */
 public class AccessControlFilterParser implements FilterParser {
 
     public static final String NAME = "acccess-control";

@@ -17,6 +17,10 @@ public class QueryAccessControlPlugin extends AbstractPlugin {
         return "Access control filter support";
     }
 
+    /**
+     * Intercept IndicesQueriesModule to inject our FilterParser
+     * before calling configure() on IndicesQueriesModule
+     */
     public void onModule(IndicesQueriesModule module) {
         module.addFilter(new AccessControlFilterParser());
     }
