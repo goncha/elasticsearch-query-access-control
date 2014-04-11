@@ -33,3 +33,15 @@ test {
         events 'started', 'passed'
     }
 }
+
+task benchmarkLC(type: JavaExec, dependsOn: 'testClasses') {
+    main 'org.apache.lucene.search.LuceneAccessControlFilterBenchmark'
+    classpath sourceSets.test.runtimeClasspath
+    jvmArgs '-server', '-Xms512m', '-Xmx512m'
+}
+
+task benchmarkES(type: JavaExec, dependsOn: 'testClasses') {
+    main 'org.elasticsearch.index.query.ElasticSearchAccessControlFilterBenchmark'
+    classpath sourceSets.test.runtimeClasspath
+    jvmArgs '-server', '-Xms128m', '-Xmx512m'
+}
