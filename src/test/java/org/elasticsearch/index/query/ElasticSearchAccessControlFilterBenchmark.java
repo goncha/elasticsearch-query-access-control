@@ -2,6 +2,10 @@ package org.elasticsearch.index.query;
 
 
 import org.apache.lucene.search.Grants;
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.settings.ImmutableSettings;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.node.NodeBuilder;
 
 import java.io.File;
@@ -19,11 +23,13 @@ public class ElasticSearchAccessControlFilterBenchmark extends BaseElasticSearch
 
     @Override
     void setUpNode() {
-        NodeBuilder builder = NodeBuilder.nodeBuilder();
-        builder.clusterName(CLUSTER_NAME).client(true).data(false);
-        node = builder.build();
-        node.start();
-        client = node.client();
+        Settings settings = ImmutableSettings.settingsBuilder()
+                .put("client.transport.ignore_cluster_name", true).build();
+        TransportClient tClient = new TransportClient(settings);
+        for(String host : System.getProperty("es.cluster.hosts", "localhost").split(",")) {
+            tClient.addTransportAddress(new InetSocketTransportAddress(host, 9300));
+        }
+        client = tClient;
     }
 
     void benchmark(Grants grants) {
@@ -38,7 +44,7 @@ public class ElasticSearchAccessControlFilterBenchmark extends BaseElasticSearch
         deleteDirectory(new File(DATA_DIRECTORY));
 
         setUpNode();
-        index(1000);
+        //index(1000);
 
         benchmark(null);
 

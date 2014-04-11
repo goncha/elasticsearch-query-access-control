@@ -2,6 +2,7 @@ package org.elasticsearch.index.query;
 
 import org.apache.lucene.search.BaseAccessControlFilterTest;
 import org.apache.lucene.search.Grants;
+import org.apache.lucene.util.ArrayUtil;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.client.Client;
@@ -23,6 +24,8 @@ public abstract class BaseElasticSearchAccessControlFilterTest extends BaseAcces
     static final String INDEX_TYPE = "line";
 
     static final String INDEX_NAME = "bigdata";
+
+    static final int MAX_SIZE = 10 * 1000 * 1000;
 
     Node node;
 
@@ -63,7 +66,7 @@ public abstract class BaseElasticSearchAccessControlFilterTest extends BaseAcces
 
         // create index first before setting index settings
         adminClient.prepareCreate(INDEX_NAME).addMapping(INDEX_TYPE,
-                "id",       "type=string,store=true,index=not-analyzed,included_in_all=false",
+                "id",       "type=string,store=true,included_in_all=false",
                 "content",  "type=string,store=false",
                 "perm",     "type=string,store=false,index=not_analyzed,include_in_all=false",
                 "_source",  "enabled=false")
@@ -99,8 +102,7 @@ public abstract class BaseElasticSearchAccessControlFilterTest extends BaseAcces
     }
 
     void tearDownNode() {
-        client = null;
-        node.stop();
+        client.close();
     }
 
     protected int search(Grants grants) {
@@ -108,7 +110,7 @@ public abstract class BaseElasticSearchAccessControlFilterTest extends BaseAcces
 
         reqBuilder.setQuery(QueryBuilders.termQuery("content", QUERY_KEYWORD))
                 .addFields("content")
-                .setSize(10000000);
+                .setSize(MAX_SIZE);
 
         if (grants != null) {
             reqBuilder.setPostFilter(new AccessControlFilterBuilder("perm", grants.getMap()));
