@@ -56,7 +56,6 @@ public abstract class BaseElasticSearchAccessControlFilterTest extends BaseAcces
         ImmutableSettings.Builder settingsBuilder = ImmutableSettings.builder()
                 .put("index.refresh_interval", "-1")
                 .put("index.translog.interval", "60s")
-                // .put("index.translog.flush_threshold_size", "200mb")
                 ;
 
         if (isMemoryStore())
@@ -64,10 +63,10 @@ public abstract class BaseElasticSearchAccessControlFilterTest extends BaseAcces
 
         // create index first before setting index settings
         adminClient.prepareCreate(INDEX_NAME).addMapping(INDEX_TYPE,
-                "id", "type=string,store=true,index=no",
-                "content", "type=string,store=false",
-                "perm", "type=string,store=false,index=not_analyzed,include_in_all=false",
-                "_source", "enabled=false")
+                "id",       "type=string,store=true,index=not-analyzed,included_in_all=false",
+                "content",  "type=string,store=false",
+                "perm",     "type=string,store=false,index=not_analyzed,include_in_all=false",
+                "_source",  "enabled=false")
                 .setSettings(settingsBuilder)
                 .execute().actionGet();
     }
