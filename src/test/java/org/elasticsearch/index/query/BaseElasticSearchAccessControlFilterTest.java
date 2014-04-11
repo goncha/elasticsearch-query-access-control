@@ -54,7 +54,10 @@ public abstract class BaseElasticSearchAccessControlFilterTest extends BaseAcces
 
         // disable refreshing for bulk indexing when creating index
         ImmutableSettings.Builder settingsBuilder = ImmutableSettings.builder()
-                .put("index.refresh_interval", "-1");
+                .put("index.refresh_interval", "-1")
+                .put("index.translog.interval", "60s")
+                // .put("index.translog.flush_threshold_size", "200mb")
+                ;
 
         if (isMemoryStore())
             settingsBuilder.put("index.store.type", "memory");
@@ -62,7 +65,7 @@ public abstract class BaseElasticSearchAccessControlFilterTest extends BaseAcces
         // create index first before setting index settings
         adminClient.prepareCreate(INDEX_NAME).addMapping(INDEX_TYPE,
                 "id", "type=string,store=true,index=no",
-                "content", "type=string,store=true",
+                "content", "type=string,store=false",
                 "perm", "type=string,store=false,index=not_analyzed,include_in_all=false",
                 "_source", "enabled=false")
                 .setSettings(settingsBuilder)
@@ -86,9 +89,11 @@ public abstract class BaseElasticSearchAccessControlFilterTest extends BaseAcces
 
     void setUpNode() {
         NodeBuilder builder = NodeBuilder.nodeBuilder();
-        builder.clusterName(CLUSTER_NAME).data(true).local(true);
+        builder.clusterName(CLUSTER_NAME).local(true);
         builder.settings().put("path.data", DATA_DIRECTORY);
         builder.settings().put("http.enabled", false);
+        builder.settings().put("index.number_of_shards", 1);
+        builder.settings().put("index.number_of_replicas", 0);
         node = builder.build();
         node.start();
         client = node.client();
@@ -112,4 +117,5 @@ public abstract class BaseElasticSearchAccessControlFilterTest extends BaseAcces
 
         return reqBuilder.execute().actionGet().getHits().getHits().length;
     }
+
 }

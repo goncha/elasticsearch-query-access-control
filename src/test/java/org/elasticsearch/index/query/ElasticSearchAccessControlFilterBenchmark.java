@@ -2,6 +2,7 @@ package org.elasticsearch.index.query;
 
 
 import org.apache.lucene.search.Grants;
+import org.elasticsearch.node.NodeBuilder;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,6 +12,18 @@ public class ElasticSearchAccessControlFilterBenchmark extends BaseElasticSearch
     @Override
     protected boolean profiling() {
         return true;
+    }
+
+    @Override
+    protected boolean isMemoryStore() { return false; }
+
+    @Override
+    void setUpNode() {
+        NodeBuilder builder = NodeBuilder.nodeBuilder();
+        builder.clusterName(CLUSTER_NAME).client(true).data(false);
+        node = builder.build();
+        node.start();
+        client = node.client();
     }
 
     void benchmark(Grants grants) {
