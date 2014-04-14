@@ -84,4 +84,15 @@ public class ElasticSearchAccessControlFilterTest extends BaseElasticSearchAcces
                 .in("D").add("0").add("1").add("2");
         Assert.assertEquals(0, search(grants));
     }
+
+    @Test
+    public void searchWithAccessControlAllInDReturnsTwoHits() throws Exception {
+        Grants grants = new Grants();
+        grants
+                .in("A").add("0")
+                .in("B").add("0")
+                .in("C").add("0")
+                .allIn("D");
+        Assert.assertEquals(2, search(grants));
+    }
 }

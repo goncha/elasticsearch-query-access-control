@@ -20,6 +20,7 @@ import java.util.Set;
  *     "grants": {
  *         "DIMENSION_A": [ ID1, ID2, ID3, ... ],
  *         "DIMENSION_B": [ ID1, ...],
+ *         "DIMENSION_C": true,
  *         ...
  *     }
  * }
@@ -28,7 +29,6 @@ import java.util.Set;
 public class AccessControlFilterParser implements FilterParser {
 
     public static final String NAME = "acccess-control";
-
 
     @Inject
     public AccessControlFilterParser() {
@@ -43,7 +43,7 @@ public class AccessControlFilterParser implements FilterParser {
     public Filter parse(QueryParseContext parseContext) throws IOException, QueryParsingException {
         XContentParser parser = parseContext.parser();
 
-        Map<String,Set<String>> grants = new HashMap<String,Set<String>>();
+        Map<String,Object> grants = new HashMap<String,Object>();
 
 
         String fieldName = null;
@@ -81,7 +81,7 @@ public class AccessControlFilterParser implements FilterParser {
         return new AccessControlFilter(fieldName, grants);
     }
 
-    protected void parseGrants(QueryParseContext parseContext, Map<String,Set<String>> grants)
+    protected void parseGrants(QueryParseContext parseContext, Map<String,Object> grants)
             throws IOException, QueryParsingException {
         XContentParser parser = parseContext.parser();
 
@@ -100,13 +100,21 @@ public class AccessControlFilterParser implements FilterParser {
                             currentGrant.add(parser.text());
                         } else {
                             throw new QueryParsingException(parseContext.index(),
-                                    "[access-control] filter only supports array of string as object value");
+                                    "[access-control] filter only supports array of string or boolean true as object value");
                         }
                     }
                     grants.put(currentFieldName, currentGrant);
+                } else if (token == XContentParser.Token.VALUE_BOOLEAN) {
+                    boolean val = parser.booleanValue();
+                    if (val) {
+                        grants.put(currentFieldName, val);
+                    } else {
+                        throw new QueryParsingException(parseContext.index(),
+                                "[access-control] filter only supports array of string or boolean true as object value");
+                    }
                 } else {
                     throw new QueryParsingException(parseContext.index(),
-                            "[access-control] filter only supports array of string as object value");
+                            "[access-control] filter only supports array of string or boolean true as object value");
                 }
             }
         }

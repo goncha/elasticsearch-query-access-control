@@ -7,22 +7,29 @@ import java.util.Set;
 
 public class Grants {
 
-    Map<String,Set<String>> grants;
+    Map<String,Object> grants;
 
     Set<String> dimensionGrant;
 
     public Grants() {
-        grants = new HashMap<String,Set<String>>();
+        grants = new HashMap<String,Object>();
         dimensionGrant = null;
     }
 
+    public Grants allIn(String dimension) {
+        dimensionGrant = null;
+        grants.put(dimension, true);
+        return this;
+    }
+
     public Grants in(String dimension) {
-        Set<String> grant = grants.get(dimension);
+        Object grant = grants.get(dimension);
         if (grant == null) {
-            grant = new HashSet<String>();
+            dimensionGrant = new HashSet<String>();
+            grant = dimensionGrant;
             grants.put(dimension, grant);
         }
-        dimensionGrant = grant;
+
         return this;
     }
 
@@ -34,7 +41,7 @@ public class Grants {
         return this;
     }
 
-    public Map<String,Set<String>> getMap() {
+    public Map<String,Object> getMap() {
         return grants;
     }
 

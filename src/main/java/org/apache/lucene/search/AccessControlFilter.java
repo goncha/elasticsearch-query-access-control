@@ -7,9 +7,9 @@ import java.util.*;
 
 public class AccessControlFilter extends TermBytesFilter {
 
-    protected Map<String, Set<String>> grants;
+    protected Map<String, Object> grants;
 
-    public AccessControlFilter(String field, Map<String, Set<String>> grants) {
+    public AccessControlFilter(String field, Map<String, Object> grants) {
         super(field);
         this.grants = grants;
     }
@@ -28,8 +28,17 @@ public class AccessControlFilter extends TermBytesFilter {
     protected boolean checkPermission(Map<String, String> perm) {
         for (Map.Entry<String,String> permEntry : perm.entrySet()) {
             if (grants.containsKey(permEntry.getKey())) {
-                Set<String> grantIds = grants.get(permEntry.getKey());
-                if (!grantIds.contains(permEntry.getValue())) return false;
+                Object grantSettings = grants.get(permEntry.getKey());
+                if (grantSettings != null) {
+                    if (grantSettings instanceof Boolean) {
+                        continue;
+                    } else {
+                        if (!((Set<String>) grantSettings).contains(permEntry.getValue()))
+                            return false;
+                    }
+                } else {
+                    return false;
+                }
             } else {
                 return false;
             }

@@ -10,9 +10,13 @@ public class AccessControlFilterBuilder extends BaseFilterBuilder {
 
     private final String field;
 
-    private final Map<String,Set<String>> grants;
+    private final Map<String,Object> grants;
 
-    public AccessControlFilterBuilder(String field, Map<String,Set<String>> grants) {
+    /**
+     * @param field Lucene field name for access control
+     * @param grants a java.util.Map of String key and (Boolean or java.util.Set) value
+     */
+    public AccessControlFilterBuilder(String field, Map<String,Object> grants) {
         this.field = field;
         this.grants = grants;
     }

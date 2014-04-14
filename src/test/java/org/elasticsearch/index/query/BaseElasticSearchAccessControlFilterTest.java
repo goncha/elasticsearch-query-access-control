@@ -102,6 +102,7 @@ public abstract class BaseElasticSearchAccessControlFilterTest extends BaseAcces
     }
 
     void tearDownNode() {
+        client.admin().indices().prepareDelete(INDEX_NAME).execute().actionGet();
         client.close();
     }
 
