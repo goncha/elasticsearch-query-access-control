@@ -109,12 +109,14 @@ public abstract class BaseElasticSearchAccessControlFilterTest extends BaseAcces
     protected int search(Grants grants) {
         SearchRequestBuilder reqBuilder = client.prepareSearch(INDEX_NAME);
 
-        reqBuilder.setQuery(QueryBuilders.termQuery("content", QUERY_KEYWORD))
-                .setSize(MAX_SIZE);
 
+        QueryBuilder queryBuilder = QueryBuilders.termQuery("content", QUERY_KEYWORD);
         if (grants != null) {
-            reqBuilder.setPostFilter(new AccessControlFilterBuilder("perm", grants.getMap()));
+            queryBuilder = QueryBuilders.filteredQuery(queryBuilder,
+                    new AccessControlFilterBuilder("perm", grants.getMap()));
         }
+
+        reqBuilder.setQuery(queryBuilder).setSize(MAX_SIZE);
 
         return reqBuilder.execute().actionGet().getHits().getHits().length;
     }

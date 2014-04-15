@@ -32,6 +32,11 @@ public class ElasticSearchAccessControlFilterBenchmark extends BaseElasticSearch
         client = tClient;
     }
 
+    @Override
+    void tearDownNode() {
+        client.close();
+    }
+
     void benchmark(Grants grants) {
         long beginMillis = System.currentTimeMillis();
         int count = search(grants);
