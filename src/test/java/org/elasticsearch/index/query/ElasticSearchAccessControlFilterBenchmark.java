@@ -49,7 +49,7 @@ public class ElasticSearchAccessControlFilterBenchmark extends BaseElasticSearch
         deleteDirectory(new File(DATA_DIRECTORY));
 
         setUpNode();
-        //index(1000);
+        index(1000);
 
         benchmark(null);
 

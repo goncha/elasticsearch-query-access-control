@@ -59,6 +59,7 @@ public abstract class BaseElasticSearchAccessControlFilterTest extends BaseAcces
         ImmutableSettings.Builder settingsBuilder = ImmutableSettings.builder()
                 .put("index.refresh_interval", "-1")
                 .put("index.translog.interval", "60s")
+                .put("index.warmer.enabled", "false")
                 ;
 
         if (isMemoryStore())
@@ -85,7 +86,9 @@ public abstract class BaseElasticSearchAccessControlFilterTest extends BaseAcces
 
         // enable refreshing after bulk indexing
         Settings.Builder settingsBuilder = ImmutableSettings.builder()
-                .put("index.refresh_interval", "1s");
+                .put("index.refresh_interval", "1s")
+                .put("index.warmer.enabled", "true")
+                ;
         adminClient.prepareUpdateSettings(INDEX_NAME).setSettings(settingsBuilder).execute().actionGet();
     }
 

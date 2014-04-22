@@ -73,6 +73,8 @@ public class AccessControlFilter extends TermBytesFilter {
                 for (String field : fields) {
                     addPermEntry(perm, field);
                 }
+            } else {
+                throw new IllegalArgumentException(permStr);
             }
         }
 
