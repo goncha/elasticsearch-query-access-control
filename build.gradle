@@ -49,12 +49,12 @@ test {
 uploadArchives {
     repositories.mavenDeployer {
         configuration = configurations.deployerJars
-        repository(url: 'http://1.1.9.4:9000/nexus/content/repositories/releases/') {
+        repository(url: nexusReleasesUrl) {
             // defined in ~/.gradle/gradle.properties
             // or pass to gradle -DnexusUserName=XXXX ...
             authentication(userName: nexusUserName, password: nexusPassword)
         }
-        snapshotRepository(url: 'http://1.1.9.4:9000/nexus/content/repositories/snapshots/') {
+        snapshotRepository(url: nexusSnapshotsUrl) {
             authentication(userName: nexusUserName, password: nexusPassword)
         }
     }
