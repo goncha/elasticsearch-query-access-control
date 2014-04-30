@@ -1,8 +1,11 @@
-.gradle
-.idea
-build
 *-data
-out
 *.iml
 *.ipr
 *.iws
+.classpath
+.gradle
+.idea
+.project
+.settings
+build
+out
