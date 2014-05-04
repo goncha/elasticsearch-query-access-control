@@ -4,7 +4,7 @@ apply plugin: 'idea'
 apply plugin: 'maven'
 
 group = 'org.elasticsearch'
-version = '1.1-SNAPSHOT'
+version = '1.1'
 
 configurations {
     deployerJars
