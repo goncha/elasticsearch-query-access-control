@@ -3,10 +3,21 @@ package org.apache.lucene.search;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 public class AccessControlFilterPermissionTest {
+
+    @Test
+    public void testNullToString() {
+        Assert.assertEquals("", AccessControlFilter.toString(null));
+    }
+
+    @Test
+    public void testEmptyMapToString() {
+        Assert.assertEquals("", AccessControlFilter.toString(Collections.EMPTY_MAP));
+    }
 
     @Test
     public void testSingleEntryToString() {
@@ -41,20 +52,26 @@ public class AccessControlFilterPermissionTest {
     }
 
     @Test
-    public void testZeroEntryFromString() {
+    public void testNullToMap() {
+        Map<String,String> p = AccessControlFilter.toMap(null);
+        Assert.assertEquals(0, p.size());
+    }
+
+    @Test
+    public void testEmptyStringToMap() {
         Map<String,String> p = AccessControlFilter.toMap("");
         Assert.assertEquals(0, p.size());
     }
 
    @Test
-    public void testSingleEntryFromString() {
+    public void testSingleEntryToMap() {
         Map<String,String> p = AccessControlFilter.toMap("A=1");
         Assert.assertEquals(1, p.size());
         Assert.assertEquals("1", p.get("A"));
     }
 
     @Test
-    public void testTwoEntriesFromString() {
+    public void testTwoEntriesToMap() {
         Map<String,String> p = AccessControlFilter.toMap("A=1,B=2");
         Assert.assertEquals(2, p.size());
         Assert.assertEquals("1", p.get("A"));
@@ -62,7 +79,7 @@ public class AccessControlFilterPermissionTest {
     }
 
     @Test
-    public void testEmptyEntryValueFromStr() {
+    public void testEmptyEntryValueToMap() {
         Map<String,String> p = AccessControlFilter.toMap("A=1,B=");
         Assert.assertEquals(2, p.size());
         Assert.assertEquals("1", p.get("A"));
@@ -70,12 +87,12 @@ public class AccessControlFilterPermissionTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testIllegalPermStrInOneEntry() {
+    public void testIllegalPermStrInOneEntryToMap() {
         AccessControlFilter.toMap("A");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testIllegalPermStrInTowEntry() {
+    public void testIllegalPermStrInTowEntryToMap() {
         AccessControlFilter.toMap("A,B");
     }
 

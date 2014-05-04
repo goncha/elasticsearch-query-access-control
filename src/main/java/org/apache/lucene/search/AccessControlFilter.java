@@ -48,6 +48,10 @@ public class AccessControlFilter extends TermBytesFilter {
 
 
     public static String toString(Map<String,String> perm) {
+        if (perm == null || perm.size() == 0) {
+            return "";
+        }
+
         StringBuilder sb = new StringBuilder();
 
         List<String> keys = new ArrayList<String>(perm.keySet());
@@ -65,6 +69,9 @@ public class AccessControlFilter extends TermBytesFilter {
     }
 
     public static Map<String,String> toMap(String permStr) {
+        if (permStr == null || permStr.length() ==0)
+            return Collections.EMPTY_MAP;
+
         Map<String,String> perm = new HashMap<String, String>();
 
         if (permStr != null && permStr.length() > 0) {
