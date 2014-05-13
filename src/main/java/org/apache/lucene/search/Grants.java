@@ -9,7 +9,7 @@ public class Grants {
 
     Map<String,Object> grants;
 
-    Set<String> dimensionGrant;
+    Object dimensionGrant;
 
     public Grants() {
         grants = new HashMap<String,Object>();
@@ -18,18 +18,17 @@ public class Grants {
 
     public Grants allIn(String dimension) {
         dimensionGrant = null;
-        grants.put(dimension, true);
+        grants.put(dimension, Boolean.TRUE);
         return this;
     }
 
     public Grants in(String dimension) {
         Object grant = grants.get(dimension);
         if (grant == null) {
-            dimensionGrant = new HashSet<String>();
-            grant = dimensionGrant;
+            grant = new HashSet<String>();
             grants.put(dimension, grant);
         }
-
+        dimensionGrant = grant;
         return this;
     }
 
@@ -37,7 +36,21 @@ public class Grants {
         if (dimensionGrant == null) {
             throw new IllegalStateException("please call in() first");
         }
-        dimensionGrant.add(id);
+
+        if (dimensionGrant != Boolean.TRUE) {
+            ((Set<String>) dimensionGrant).add(id);
+        }
+        return this;
+    }
+
+    public Grants remove(String id) {
+        if (dimensionGrant == null) {
+            throw new IllegalStateException("please call in() first");
+        }
+
+        if (dimensionGrant != Boolean.TRUE) {
+            ((Set<String>) dimensionGrant).remove(id);
+        }
         return this;
     }
 
