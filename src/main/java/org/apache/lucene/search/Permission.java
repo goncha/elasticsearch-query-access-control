@@ -48,8 +48,8 @@ public class Permission {
     }
 
 
-    public void fromString(String str) {
-        if (str == null) return;
+    public Permission fromString(String str) {
+        if (str == null) return this;
 
         int p = 0, end = str.length();
         for (int i = 0; i < end; i++) {
@@ -70,6 +70,8 @@ public class Permission {
         if (p < end) {
             add(str.substring(p, end));
         }
+
+        return this;
     }
 
 

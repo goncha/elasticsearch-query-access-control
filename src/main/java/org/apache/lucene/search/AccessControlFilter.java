@@ -21,19 +21,20 @@ public class AccessControlFilter extends TermBytesFilter {
             return true;
         }
 
-        Map<String,String> perm = toMap(permStr);
+        Map<String,Set<String>> perm = new Permission().fromString(permStr).getMap();
         return checkPermission(perm);
     }
 
-    protected boolean checkPermission(Map<String, String> perm) {
-        for (Map.Entry<String,String> permEntry : perm.entrySet()) {
+
+    protected boolean checkPermission(Map<String, Set<String>> perm) {
+        for (Map.Entry<String,Set<String>> permEntry : perm.entrySet()) {
             if (grants.containsKey(permEntry.getKey())) {
                 Object grantSettings = grants.get(permEntry.getKey());
                 if (grantSettings != null) {
                     if (grantSettings instanceof Boolean) {
                         continue;
                     } else {
-                        if (!((Set<String>) grantSettings).contains(permEntry.getValue()))
+                        if (!((Set<String>) grantSettings).containsAll(permEntry.getValue()))
                             return false;
                     }
                 } else {
@@ -46,56 +47,6 @@ public class AccessControlFilter extends TermBytesFilter {
         return true;
     }
 
-
-    public static String toString(Map<String,String> perm) {
-        if (perm == null || perm.size() == 0) {
-            return "";
-        }
-
-        StringBuilder sb = new StringBuilder();
-
-        List<String> keys = new ArrayList<String>(perm.keySet());
-        Collections.sort(keys);
-
-        int i = 0;
-        for(String key : keys) {
-            if (i++ > 0) sb.append(",");
-            String value = perm.get(key);
-            if (value == null) throw new IllegalArgumentException(key + "'s value is null in permission");
-            sb.append(key).append("=").append(value);
-        }
-
-        return sb.toString();
-    }
-
-    public static Map<String,String> toMap(String permStr) {
-        if (permStr == null || permStr.length() ==0)
-            return Collections.EMPTY_MAP;
-
-        Map<String,String> perm = new HashMap<String, String>();
-
-        if (permStr != null && permStr.length() > 0) {
-            String[] fields = permStr.split(",");
-            if (fields != null && fields.length > 0) {
-                for (String field : fields) {
-                    addPermEntry(perm, field);
-                }
-            } else {
-                throw new IllegalArgumentException(permStr);
-            }
-        }
-
-        return perm;
-    }
-
-    private static void addPermEntry(Map<String,String> perm, String field) {
-        int pos = field.indexOf('=');
-        if (pos > 0) {
-            perm.put(field.substring(0, pos), field.substring(pos + 1));
-        } else {
-            throw new IllegalArgumentException(field);
-        }
-    }
 
     @Override
     public boolean equals(Object o) {
