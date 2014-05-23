@@ -1,7 +1,0 @@
-* Lucene Core
-
--server -Xms128m -Xmx512m
-
-- Indexed 8627000 docs in 156344 ms
-- Found 416000 for keyword 'request' in 4125 ms
-- Found 2000 for keyword 'request' in 2750 ms
