@@ -28,7 +28,7 @@ import java.util.Set;
  */
 public class AccessControlFilterParser implements FilterParser {
 
-    public static final String NAME = "acccess-control";
+    public static final String NAME = "access-control";
 
     @Inject
     public AccessControlFilterParser() {
@@ -43,8 +43,7 @@ public class AccessControlFilterParser implements FilterParser {
     public Filter parse(QueryParseContext parseContext) throws IOException, QueryParsingException {
         XContentParser parser = parseContext.parser();
 
-        Map<String,Object> grants = new HashMap<String,Object>();
-
+        Map<String,Object> grants = null;
 
         String fieldName = null;
 
@@ -58,10 +57,12 @@ public class AccessControlFilterParser implements FilterParser {
                     fieldName = parser.text();
                 } else if ("grants".equals(currentFieldName)) {
                     if (token == XContentParser.Token.START_OBJECT) {
-                        parseGrants(parseContext, grants);
+                        grants = parseGrants(parseContext);
+                    } else if (token == XContentParser.Token.VALUE_NULL) {
+                        // null value
                     } else {
                         throw new QueryParsingException(parseContext.index(),
-                                "[access-control] filter only supports [grants] as object value");
+                                "[access-control] filter only supports [grants] as object value or null value");
                     }
                 } else {
                     throw new QueryParsingException(parseContext.index(),
@@ -74,15 +75,13 @@ public class AccessControlFilterParser implements FilterParser {
             throw new QueryParsingException(parseContext.index(), "No field specified for access-control filter");
         }
 
-        if (grants == null) {
-            throw new QueryParsingException(parseContext.index(), "No field specified for access-control filter");
-        }
-
         return new AccessControlFilter(fieldName, grants);
     }
 
-    protected void parseGrants(QueryParseContext parseContext, Map<String,Object> grants)
+    protected Map<String,Object> parseGrants(QueryParseContext parseContext)
             throws IOException, QueryParsingException {
+        Map<String,Object> grants = new HashMap<String,Object>();
+
         XContentParser parser = parseContext.parser();
 
         String currentFieldName = null;
@@ -118,6 +117,8 @@ public class AccessControlFilterParser implements FilterParser {
                 }
             }
         }
+
+        return grants;
     }
 
 }
