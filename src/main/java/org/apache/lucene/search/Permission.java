@@ -41,7 +41,7 @@ public class Permission {
             Iterator<String> setIt = entry.getValue().iterator();
             while (setIt.hasNext()) {
                 if (ii++ > 0) sb.append(",");
-                sb.append(it.next());
+                sb.append(setIt.next());
             }
         }
         return sb.toString();
@@ -49,6 +49,8 @@ public class Permission {
 
 
     public void fromString(String str) {
+        if (str == null) return;
+
         int p = 0, end = str.length();
         for (int i = 0; i < end; i++) {
             char ch = str.charAt(i);
@@ -56,11 +58,12 @@ public class Permission {
                 in(str.substring(p, i));
                 p = i + 1;
             } else if (',' == ch) {
-                add(str.substring(p, i));
+                if (p < i) add(str.substring(p, i));
                 p = i + 1;
             } else  if (';' == ch) {
-                add(str.substring(p, i));
+                if (p < i) add(str.substring(p, i));
                 p = i + 1;
+                dimensionSet = null;
             }
         }
 

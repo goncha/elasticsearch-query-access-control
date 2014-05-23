@@ -43,7 +43,7 @@ public class AccessControlFilterPermissionTest {
         p.in("C").add("3");
         p.in("B").add("2");
         p.in("A").add("1");
-        Assert.assertEquals("A=1;B=2;C=3", p);
+        Assert.assertEquals("A=1;B=2;C=3", p.toString());
     }
 
     @Test
@@ -66,48 +66,78 @@ public class AccessControlFilterPermissionTest {
     }
 
     @Test
-    public void testNullToMap() {
-        Map<String,String> p = AccessControlFilter.toMap(null);
-        Assert.assertEquals(0, p.size());
-    }
-
-    @Test
-    public void testEmptyStringToMap() {
-        Map<String,String> p = AccessControlFilter.toMap("");
-        Assert.assertEquals(0, p.size());
+    public void testFromEmptyString() {
+        Permission p  = new Permission();
+        Assert.assertEquals("New permission has no permission entry", 0, p.getMap().size());
+        p.fromString(null);
+        Assert.assertEquals("fromString(null) not load any permission entries", 0, p.getMap().size());
+        p.fromString("");
+        Assert.assertEquals("fromString(\"\") not load any permission entries", 0, p.getMap().size());
     }
 
    @Test
-    public void testSingleEntryToMap() {
-        Map<String,String> p = AccessControlFilter.toMap("A=1");
-        Assert.assertEquals(1, p.size());
-        Assert.assertEquals("1", p.get("A"));
+    public void testSingleEntryFromString() {
+        Permission p = new Permission();
+        p.fromString("A=1");
+        Assert.assertEquals(1, p.getMap().size());
+        Assert.assertEquals(1, p.getMap().get("A").size());
+        Assert.assertTrue(p.getMap().get("A").contains("1"));
     }
 
     @Test
-    public void testTwoEntriesToMap() {
-        Map<String,String> p = AccessControlFilter.toMap("A=1,B=2");
-        Assert.assertEquals(2, p.size());
-        Assert.assertEquals("1", p.get("A"));
-        Assert.assertEquals("2", p.get("B"));
+    public void testTwoEntriesFromString() {
+        Permission p = new Permission();
+        p.fromString("A=1;B=2");
+        Assert.assertEquals(2, p.getMap().size());
+        Assert.assertEquals(1, p.getMap().get("A").size());
+        Assert.assertEquals(1, p.getMap().get("B").size());
+        Assert.assertTrue(p.getMap().get("A").contains("1"));
+        Assert.assertTrue(p.getMap().get("B").contains("2"));
     }
 
     @Test
-    public void testEmptyEntryValueToMap() {
-        Map<String,String> p = AccessControlFilter.toMap("A=1,B=");
-        Assert.assertEquals(2, p.size());
-        Assert.assertEquals("1", p.get("A"));
-        Assert.assertEquals("", p.get("B"));
+    public void testMultiValueEntryFromString() {
+        Permission p = new Permission();
+        p.fromString("A=1,2,3");
+        Assert.assertEquals(1, p.getMap().size());
+        Assert.assertEquals(3, p.getMap().get("A").size());
+        Assert.assertTrue(p.getMap().get("A").contains("1"));
+        Assert.assertTrue(p.getMap().get("A").contains("2"));
+        Assert.assertTrue(p.getMap().get("A").contains("3"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testIllegalPermStrInOneEntryToMap() {
-        AccessControlFilter.toMap("A");
+    @Test
+    public void testEndWithSeparatorFromString() {
+        Permission p = new Permission();
+        p.fromString("A=1;");
+        Assert.assertEquals(1, p.getMap().size());
+        Assert.assertEquals(1, p.getMap().get("A").size());
+        Assert.assertTrue(p.getMap().get("A").contains("1"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testIllegalPermStrInTowEntryToMap() {
-        AccessControlFilter.toMap("A,B");
+    @Test
+    public void testIgnoreEmptyStringValueFromString() {
+        Permission p = new Permission();
+        p.fromString("A=1,");
+        Assert.assertEquals(1, p.getMap().size());
+        Assert.assertEquals(1, p.getMap().get("A").size());
+        Assert.assertTrue(p.getMap().get("A").contains("1"));
+    }
+
+    @Test
+    public void testIgnoreAllEmptyStringValuesFromString() {
+        Permission p = new Permission();
+        p.fromString("A=,1,;B=,,1");
+        Assert.assertEquals(2, p.getMap().size());
+        Assert.assertEquals(1, p.getMap().get("A").size());
+        Assert.assertEquals(1, p.getMap().get("B").size());
+        Assert.assertTrue(p.getMap().get("A").contains("1"));
+        Assert.assertTrue(p.getMap().get("B").contains("1"));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testNoDimensionFromString() {
+        new Permission().fromString("1,2");
     }
 
 
