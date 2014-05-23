@@ -17,6 +17,8 @@ public abstract class TermBytesFilter extends Filter {
 
     protected TermBytesFilter(String field) {
         super();
+        if (field == null || field.length() == 0)
+            throw new IllegalArgumentException();
         this.field = field;
     }
 
