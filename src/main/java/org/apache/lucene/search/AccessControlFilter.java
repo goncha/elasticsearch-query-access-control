@@ -9,6 +9,10 @@ public class AccessControlFilter extends TermBytesFilter {
 
     protected Map<String, Object> grants;
 
+    public AccessControlFilter(String field) {
+        this(field, null);
+    }
+
     public AccessControlFilter(String field, Map<String, Object> grants) {
         super(field);
         this.grants = grants;
@@ -16,6 +20,8 @@ public class AccessControlFilter extends TermBytesFilter {
 
     @Override
     protected boolean checkBytes(BytesRef ref) {
+        if (grants == null) return true;
+
         String permStr = Term.toString(ref);
         if (permStr == null || permStr.length() == 0) {
             return true;
@@ -24,7 +30,6 @@ public class AccessControlFilter extends TermBytesFilter {
         Map<String,Set<String>> perm = new Permission().fromString(permStr).getMap();
         return checkPermission(perm);
     }
-
 
     protected boolean checkPermission(Map<String, Set<String>> perm) {
         for (Map.Entry<String,Set<String>> permEntry : perm.entrySet()) {
