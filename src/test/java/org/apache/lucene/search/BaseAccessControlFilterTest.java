@@ -64,13 +64,14 @@ public abstract class BaseAccessControlFilterTest {
         int i = 0;
         while ((line = reader.readLine()) != null) {
             String id = Integer.toString(multiply * 10000 + i);
-            String perm = AccessControlFilter.toString(perm("A", Integer.toString(i % 100),
-                    "C", Integer.toString(i % 300),
-                    "B", Integer.toString(i % 300),
-                    "D", Integer.toString(i % 1000)));
+            Permission perm = new Permission();
+            perm.in("A").add(Integer.toString(i % 100))
+                .in("C").add(Integer.toString(i % 300))
+                .in("B").add(Integer.toString(i % 300))
+                .in("D").add(Integer.toString(i % 1000));
             i++;
 
-            indexDoc(id, line, perm);
+            indexDoc(id, line, perm.toString());
         }
         reader.close();
         return i;
